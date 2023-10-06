@@ -24,6 +24,15 @@ class KmlTagV22 {
   static const timestamp = 'timestamp';
   static const when = 'when';
 
+  static const folder = 'Folder';
+  static const styleUrl = 'styleUrl';
+
+  static const style = 'Style';
+  static const lineStyle = 'LineStyle';
+  static const color = 'color';
+  static const width = 'width';
+  static const id = 'id';
+
   // <altitudeMode>absolute</altitudeMode>
 
 }

@@ -20,7 +20,7 @@ enum AltitudeMode {
 class KmlWriter {
   final AltitudeMode altitudeMode;
 
-  KmlWriter({this.altitudeMode = AltitudeMode.absolute});
+  KmlWriter({this.altitudeMode = AltitudeMode.clampToGround});
 
   String get _altitudeModeString {
     final strVal = altitudeMode.toString();
@@ -46,17 +46,19 @@ class KmlWriter {
           _writeMetadata(builder, gpx.metadata!);
         }
 
-        for (final wpt in gpx.wpts) {
-          _writePoint(builder, KmlTagV22.placemark, wpt);
-        }
+        builder.element(KmlTagV22.folder, nest: () {
+          for (final wpt in gpx.wpts) {
+            _writePoint(builder, KmlTagV22.placemark, wpt);
+          }
 
-        for (final rte in gpx.rtes) {
-          _writeRoute(builder, rte);
-        }
+          for (final rte in gpx.rtes) {
+            _writeRoute(builder, rte);
+          }
 
-        for (final trk in gpx.trks) {
-          _writeTrack(builder, trk);
-        }
+          for (final trk in gpx.trks) {
+            _writeTrack(builder, trk);
+          }
+        });
       });
     });
 
@@ -66,6 +68,22 @@ class KmlWriter {
   void _writeMetadata(XmlBuilder builder, Metadata metadata) {
     _writeElement(builder, KmlTagV22.name, metadata.name);
     _writeElement(builder, KmlTagV22.desc, metadata.desc);
+
+    if(metadata.extensions[KmlTagV22.id] != null) {
+      builder.element(KmlTagV22.style, 
+        attributes: {KmlTagV22.id: metadata.extensions[KmlTagV22.id]!},
+        nest: () {
+          builder.element(KmlTagV22.lineStyle, nest: () {
+             if(metadata.extensions[KmlTagV22.color] != null) {
+              _writeElement(builder, KmlTagV22.color, metadata.extensions[KmlTagV22.color]);
+            }
+            if(metadata.extensions[KmlTagV22.width] != null) {
+              _writeElement(builder, KmlTagV22.width, metadata.extensions[KmlTagV22.width]);
+            }
+          });
+        }
+      );
+    }
 
     if (metadata.author != null) {
       builder.element('atom:author', nest: () {
@@ -81,7 +99,7 @@ class KmlWriter {
       });
     }
 
-    builder.element(KmlTagV22.extendedData, nest: () {
+    /*builder.element(KmlTagV22.extendedData, nest: () {
       _writeExtendedElement(builder, GpxTagV11.keywords, metadata.keywords);
 
       if (metadata.time != null) {
@@ -93,13 +111,14 @@ class KmlWriter {
         _writeExtendedElement(builder, GpxTagV11.copyright,
             '${metadata.copyright!.author}, ${metadata.copyright!.year}');
       }
-    });
+    });*/
   }
 
   void _writeRoute(XmlBuilder builder, Rte rte) {
     builder.element(KmlTagV22.placemark, nest: () {
       _writeElement(builder, GpxTagV11.name, rte.name);
-      _writeElement(builder, GpxTagV11.desc, rte.desc);
+      //_writeElement(builder, GpxTagV11.desc, rte.desc);
+      _writeElement(builder, KmlTagV22.styleUrl, rte.desc);
       _writeAtomLinks(builder, rte.links);
 
       builder.element(KmlTagV22.extendedData, nest: () {
@@ -111,8 +130,8 @@ class KmlWriter {
       });
 
       builder.element(KmlTagV22.track, nest: () {
-        _writeElement(builder, KmlTagV22.extrude, 1);
-        _writeElement(builder, KmlTagV22.tessellate, 1);
+        //_writeElement(builder, KmlTagV22.extrude, 1);
+        //_writeElement(builder, KmlTagV22.tessellate, 1);
         _writeElement(builder, KmlTagV22.altitudeMode, _altitudeModeString);
 
         _writeElement(
@@ -158,7 +177,8 @@ class KmlWriter {
   void _writePoint(XmlBuilder builder, String tagName, Wpt wpt) {
     builder.element(tagName, nest: () {
       _writeElement(builder, KmlTagV22.name, wpt.name);
-      _writeElement(builder, KmlTagV22.desc, wpt.desc);
+      //_writeElement(builder, KmlTagV22.desc, wpt.desc);
+      _writeElement(builder, KmlTagV22.styleUrl, wpt.desc);
 
       _writeElementWithTime(builder, wpt.time);
 
