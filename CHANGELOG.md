@@ -1,3 +1,17 @@
+## [2.2.1]
+
+* fixed missed symbol during writing
+
+## [2.2.0]
+
+* update Dart SDK to 2.17.0 or later
+* update XML to 6.1.0
+* fix reading with missing tags (version, creator)
+
+## [2.1.1]
+
+* Fix GpxReader to read CDATA elements
+
 ## [2.1.0]
 
 * Add option to KmlWriter to specify <altitudeMode> (absolute, clampToGround, relativeToGround)
