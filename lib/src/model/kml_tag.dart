@@ -32,6 +32,9 @@ class KmlTagV22 {
   static const color = 'color';
   static const width = 'width';
   static const id = 'id';
+  static const iconStyle = 'IconStyle';
+  static const icon = 'Icon';
+  static const href = 'href';
 
   // <altitudeMode>absolute</altitudeMode>
 

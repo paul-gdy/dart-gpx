@@ -70,19 +70,38 @@ class KmlWriter {
     _writeElement(builder, KmlTagV22.desc, metadata.desc);
 
     if(metadata.extensions[KmlTagV22.id] != null) {
-      builder.element(KmlTagV22.style, 
-        attributes: {KmlTagV22.id: metadata.extensions[KmlTagV22.id]!},
-        nest: () {
-          builder.element(KmlTagV22.lineStyle, nest: () {
-             if(metadata.extensions[KmlTagV22.color] != null) {
-              _writeElement(builder, KmlTagV22.color, metadata.extensions[KmlTagV22.color]);
+      final List<String> ids = metadata.extensions[KmlTagV22.id]!.split(' ');
+
+      for(final String id in ids) {
+        if(metadata.extensions['${KmlTagV22.width}$id'] != null) {
+          builder.element(KmlTagV22.style,
+            attributes: {KmlTagV22.id: id},
+            nest: () {
+              builder.element(KmlTagV22.lineStyle, nest: () {
+                if(metadata.extensions['${KmlTagV22.color}$id'] != null) {
+                  _writeElement(builder, KmlTagV22.color, metadata.extensions['${KmlTagV22.color}$id']);
+                }
+                _writeElement(builder, KmlTagV22.width, metadata.extensions['${KmlTagV22.width}$id']);
+              });
             }
-            if(metadata.extensions[KmlTagV22.width] != null) {
-              _writeElement(builder, KmlTagV22.width, metadata.extensions[KmlTagV22.width]);
-            }
-          });
+          );
         }
-      );
+        if(metadata.extensions['${KmlTagV22.icon}$id'] != null) {
+          builder.element(KmlTagV22.style,
+            attributes: {KmlTagV22.id: id},
+            nest: () {
+              builder.element(KmlTagV22.iconStyle, nest: () {
+                if(metadata.extensions['${KmlTagV22.color}$id'] != null) {
+                  _writeElement(builder, KmlTagV22.color, metadata.extensions['${KmlTagV22.color}$id']);
+                }
+                builder.element(KmlTagV22.icon, nest: () {
+                  _writeElement(builder, KmlTagV22.href, metadata.extensions['${KmlTagV22.icon}$id']);
+                });
+              });
+            }
+          );
+        }
+      }
     }
 
     if (metadata.author != null) {
